@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chain Rule Worksheet Generator</title>
+  
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']],
+        packages: {'[+]': ['base', 'ams']}
+      },
+      chtml: {
+        displayAlign: 'left',
+        scale: 1.1
+      }
+    };
+  </script>
+
+  <style>
+    :root {
+      --primary-color: #3498db;
+      --secondary-color: #2980b9;
+      --accent-color: #e74c3c;
+      --light-color: #ecf0f1;
+      --dark-color: #2c3e50;
+      --success-color: #27ae60;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+      /* Define a consistent font stack for the whole app */
+      --main-font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: var(--main-font);
+      line-height: 1.6;
+      color: #333;
+      background-color: #f9f9f9;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h2, h3 {
+      color: var(--dark-color);
+      margin-bottom: 15px;
+    }
+    
+    h2 {
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 10px;
+      margin-top: 25px;
+    }
+    
+    .container {
+      background-color: white;
+      border-radius: var(--border-radius);
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: var(--box-shadow);
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: var(--transition);
+      margin: 10px 10px 10px 0;
+      font-family: var(--main-font); /* Enforce font on buttons */
+    }
+    
+    .btn:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+      background-color: var(--light-color);
+      color: var(--dark-color);
+    }
+    
+    .btn-secondary:hover {
+      background-color: #d6dbdf;
+    }
+    
+    .difficulty-option {
+      display: inline-block;
+      margin: 10px;
+      cursor: pointer;
+      border: 3px solid transparent;
+      border-radius: var(--border-radius);
+      transition: var(--transition);
+    }
+    
+    .difficulty-option:hover {
+      transform: scale(1.05);
+    }
+    
+    .difficulty-option.selected {
+      border-color: var(--success-color);
+      box-shadow: 0 0 8px rgba(39, 174, 96, 0.5);
+    }
+    
+    #difficulty-container {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: var(--light-color);
+      border-radius: var(--border-radius);
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .function-type {
+      display: inline-block;
+      margin: 8px;
+      padding: 12px 18px;
+      background-color: var(--light-color);
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      /* FIX 1: Explicitly enforce font family to match body */
+      font-family: var(--main-font); 
+      font-size: 1rem;
+    }
+    
+    .function-type:hover {
+      background-color: #d6e6f2;
+      transform: translateY(-2px);
+    }
+    
+    .function-type.selected {
+      background-color: #d1f2eb;
+      box-shadow: 0 0 0 2px var(--success-color);
+    }
+    
+    #selected-functions {
+      margin: 15px 0;
+      font-weight: bold;
+      padding: 12px;
+      background-color: #e8f4fc;
+      border-radius: var(--border-radius);
+      border-left: 4px solid var(--primary-color);
+    }
+    
+    .functions-used {
+      font-size: 0.95em;
+      color: #555;
+      margin-top: 10px;
+      font-family: 'Courier New', Courier, monospace;
+      background: #f0f0f0;
+      padding: 5px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+    
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      font-size: 16px;
+      transition: var(--transition);
+      font-family: var(--main-font);
+    }
+    
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+    
+    select {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      font-size: 16px;
+      margin: 10px 0;
+      background-color: white;
+      font-family: var(--main-font);
+    }
+    
+    #function-types {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 15px 0;
+    }
+    
+    #manual-input-fields {
+      margin: 15px 0;
+    }
+    
+    #questions {
+      margin-top: 20px;
+      padding-left: 20px;
+    }
+    
+    #questions li {
+      margin-bottom: 25px; /* Increased spacing */
+      padding: 20px;
+      background-color: #f8f9fa;
+      border-radius: var(--border-radius);
+      border-left: 5px solid var(--primary-color);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--dark-color);
+    }
+    
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      color: var(--primary-color);
+    }
+    
+    .header p {
+      font-size: 1.1rem;
+      color: #7f8c8d;
+    }
+    
+    .difficulty-key {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 15px;
+      font-size: 0.85rem;
+      color: #666;
+      gap: 15px;
+    }
+
+    .difficulty-key-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .difficulty-button {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+      border: none;
+      cursor: default;
+    }
+
+    .difficulty-button-easy {
+      background-color: #27ae60;
+    }
+
+    .difficulty-button-medium {
+      background-color: #f39c12;
+    }
+
+    .difficulty-button-hard {
+      background-color: #e74c3c;
+    }
+    
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
+      .btn {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+      }
+
+      .function-type {
+        width: calc(50% - 16px);
+        text-align: center;
+      }
+      
+      .difficulty-key {
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Chain Rule Worksheet Generator</h1>
+    <p>Create custom chain rule practice problems for calculus students</p>
+  </div>
+
+  <div class="container">
+    <h2>Choose function selection method:</h2>
+    <div>
+      <button class="btn" id="random-select-btn">Select Random Functions</button>
+      <button class="btn btn-secondary" id="manual-select-btn">Choose My Own Functions</button>
+    </div>
+  </div>
+
+  <div class="container hidden" id="random-select-container">
+    <h3>Click 5 function types below:</h3>
+    <div id="function-types">
+      <div class="function-type" data-type="power-positive">Power (positive integer)</div>
+      <div class="function-type" data-type="power-negative">Power (negative integer)</div>
+      <div class="function-type" data-type="power-rational">Power (rational)</div>
+      <div class="function-type" data-type="trigonometric">Trigonometric</div>
+      <div class="function-type" data-type="inverse-trig">Inverse Trigonometric</div>
+      <div class="function-type" data-type="exponential">Exponential</div>
+      <div class="function-type" data-type="logarithmic">Logarithmic</div>
+    </div>
+    <div id="selected-functions"></div>
+  </div>
+
+  <div class="container hidden" id="function-inputs">
+    <h2 id="function-inputs-title">Enter 5 functions:</h2>
+    <div id="manual-input-fields">
+      <p style="font-size:0.9em; color:#666; margin-bottom:10px;">Use standard notation: sin(x), e^x, x^2, ln(x), etc.</p>
+      <input type="text" placeholder="Function 1 (e.g. sin(x))" id="f1">
+      <input type="text" placeholder="Function 2 (e.g. 1/x)" id="f2">
+      <input type="text" placeholder="Function 3 (e.g. cos(x))" id="f3">
+      <input type="text" placeholder="Function 4 (e.g. x^2)" id="f4">
+      <input type="text" placeholder="Function 5 (e.g. 2x)" id="f5">
+    </div>
+
+    <label for="subcase-select">Choose number of questions:</label>
+    <select id="subcase-select" onchange="showDifficultyOptions()">
+      <option value="">--Select--</option>
+      <option value="10">10</option>
+      <option value="15">15</option>
+      <option value="20">20</option>
+    </select>
+    <div id="difficulty-container" class="hidden">
+      <h3>Pick level of difficulty:</h3>
+      <div id="difficulty-images"></div>
+      <div id="difficulty-key" class="hidden">
+        <div class="difficulty-key">
+          <div class="difficulty-key-item">
+            <button class="difficulty-button difficulty-button-easy" disabled></button>
+            <span>Easy</span>
+          </div>
+          <div class="difficulty-key-item">
+            <button class="difficulty-button difficulty-button-medium" disabled></button>
+            <span>Medium</span>
+          </div>
+          <div class="difficulty-key-item">
+            <button class="difficulty-button difficulty-button-hard" disabled></button>
+            <span>Hard</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="btn" style="width:100%; margin-top:20px;" onclick="generateChainRule()">Generate Chain Questions</button>
+  </div>
+
+  <div class="container">
+    <h2>Generated Questions:</h2>
+    <ol id="questions"></ol>
+  </div>
+
+<script>
+  
+  const functionLibraries = {
+    "power-positive": Array.from({length: 12}, (_, i) => ({
+        display: `x^{${i+2}}`,
+        latex: `\\left( u \\right)^{${i+2}}`
+    })),
+    "power-negative": Array.from({length: 8}, (_, i) => ({
+        display: `1/x^{${i+1}}`,
+        latex: `\\frac{1}{\\left( u \\right)^{${i+1}}}`
+    })),
+    "power-rational": [
+        { display: "√x", latex: "\\sqrt{ u }" },
+        { display: "x^(1/3)", latex: "\\left( u \\right)^{\\frac{1}{3}}" },
+        { display: "x^(3/2)", latex: "\\left( u \\right)^{\\frac{3}{2}}" },
+        { display: "1/√x", latex: "\\frac{1}{\\sqrt{ u }}" },
+        { display: "x^(2/3)", latex: "\\left( u \\right)^{\\frac{2}{3}}" }
+    ],
+    "trigonometric": [
+        { display: "sin(x)", latex: "\\sin\\left( u \\right)" },
+        { display: "cos(x)", latex: "\\cos\\left( u \\right)" },
+        { display: "tan(x)", latex: "\\tan\\left( u \\right)" },
+        { display: "sec(x)", latex: "\\sec\\left( u \\right)" },
+        { display: "csc(x)", latex: "\\csc\\left( u \\right)" },
+        { display: "cot(x)", latex: "\\cot\\left( u \\right)" }
+    ],
+    "inverse-trig": [
+        { display: "arcsin(x)", latex: "\\arcsin\\left( u \\right)" },
+        { display: "arccos(x)", latex: "\\arccos\\left( u \\right)" },
+        { display: "arctan(x)", latex: "\\arctan\\left( u \\right)" }
+    ],
+    "exponential": [
+        { display: "e^x", latex: "e^{ u }" },
+        { display: "2^x", latex: "2^{ u }" },
+        { display: "10^x", latex: "10^{ u }" },
+        { display: "e^(2x)", latex: "e^{2 \\cdot u }" }
+    ],
+    "logarithmic": [
+        { display: "ln(x)", latex: "\\ln\\left( u \\right)" },
+        { display: "log_2(x)", latex: "\\log_{2}\\left( u \\right)" },
+        { display: "log_10(x)", latex: "\\log_{10}\\left( u \\right)" }
+    ]
+  };
+
+  const subcases = {
+    subcase1A: [[1, 2, 4], [2, 3, 5], [3, 4, 1], [4, 5, 2], [5, 1, 3], [4, 2, 1], [5, 3, 2], [1, 4, 3], [2, 5, 4], [3, 1, 5]],
+    subcase1B: [[1,4], [2, 3, 5], [4, 5, 2], [1, 5, 3], [4, 3, 1], [3, 4, 1], [2, 1, 3], [5, 4, 2], [3, 2, 5], [5, 1, 2, 4]],
+    subcase1C: [[5, 3], [3, 5], [2, 3, 1], [3, 4, 1], [4, 2, 5], [1, 3, 2], [1, 4, 3], [5, 2, 4], [4, 5, 1, 2], [2, 1, 5, 4]],
+    subcase1D: [[2, 4], [5, 2], [5, 3], [3, 2, 1], [4, 2, 5], [3, 1, 4], [1, 3, 5], [4, 5, 1, 2], [1, 5, 4, 3], [2, 3, 4, 1]],
+    subcase1E: [[5, 1], [4, 2], [1, 3], [2, 5], [3, 1, 4], [5, 3, 2], [1, 2, 4, 3], [3, 4, 1, 5], [2, 3, 5, 4], [4, 5, 2, 1]],
+    subcase1F: [[3, 1], [1, 4], [2, 5], [4, 2], [5, 3], [1, 2, 4, 3], [2, 3, 5, 4], [3, 4, 1, 5], [4, 5, 2, 1], [5, 1, 3, 2]],
+    subcase2A: [[1, 5], [2, 5], [2, 4], [4, 2], [1, 4], [4, 1], [1, 3], [3, 1], [5, 3], [3, 5], [5, 1, 2], [2, 3, 4], [4, 5, 2], [5, 4, 3], [3, 2, 1]],
+    subcase2B: [[2, 1], [1, 5], [4, 5], [4, 3], [3, 2], [4, 1], [1, 3], [3, 1], [5, 2], [5, 3], [3, 4], [2, 3, 5], [1, 4, 2], [2, 5, 4], [5, 1, 2, 4]],
+    subcase2C: [[2, 1], [3, 2], [4, 3], [5, 4], [1, 5], [1, 4], [4, 1], [1, 3], [3, 1], [2, 5], [4, 2], [5, 3], [3, 5, 2], [5, 1, 2, 4], [2, 3, 4, 5]],
+    subcase3:  [[1, 2], [2, 1], [2, 3], [3, 2], [3, 4], [4, 3], [4, 5], [5, 4], [5, 1], [1, 5], [1, 4], [4, 1], [1, 3], [3, 1], [5, 3], [3, 5], [2, 5], [5, 2], [2, 4], [4, 2]]
+  };
+
+  let selectedSubcaseKey = "";
+  let selectedFunctionTypes = [];
+  let isRandomMode = false;
+
+  // Initialize UI
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('random-select-btn').addEventListener('click', showRandomSelect);
+    document.getElementById('manual-select-btn').addEventListener('click', showManualSelect);
+    
+    const functionTypes = document.querySelectorAll('.function-type');
+    functionTypes.forEach(type => {
+      type.addEventListener('click', function() {
+        if (this.classList.contains('selected')) {
+          this.classList.remove('selected');
+          selectedFunctionTypes = selectedFunctionTypes.filter(t => t !== this.dataset.type);
+        } else if (selectedFunctionTypes.length < 5) {
+          this.classList.add('selected');
+          selectedFunctionTypes.push(this.dataset.type);
+        }
+        
+        if (selectedFunctionTypes.length === 5) {
+          showFunctionInputs();
+        }
+      });
+    });
+  });
+
+  function showRandomSelect() {
+    document.getElementById('random-select-container').classList.remove('hidden');
+    document.getElementById('function-inputs').classList.add('hidden');
+    resetSelection();
+    isRandomMode = true;
+    document.getElementById('manual-input-fields').classList.add('hidden');
+    document.getElementById('function-inputs-title').classList.add('hidden');
+  }
+
+  function showManualSelect() {
+    document.getElementById('random-select-container').classList.add('hidden');
+    document.getElementById('function-inputs').classList.remove('hidden');
+    document.getElementById('manual-input-fields').classList.remove('hidden');
+    document.getElementById('function-inputs-title').classList.remove('hidden');
+    resetSelection();
+    isRandomMode = false;
+  }
+
+  function showFunctionInputs() {
+    let displayText = '';
+    selectedFunctionTypes.forEach((type, index) => {
+      displayText += `Function ${index + 1}: ${type.replace('power-', 'Power ').replace('-', ' ')}   `;
+    });
+    document.getElementById('selected-functions').textContent = displayText;
+    document.getElementById('function-inputs').classList.remove('hidden');
+  }
+
+  function resetSelection() {
+    selectedFunctionTypes = [];
+    document.querySelectorAll('.function-type').forEach(el => el.classList.remove('selected'));
+    document.getElementById('selected-functions').textContent = '';
+  }
+
+  function getRandomFunction(type) {
+    const library = functionLibraries[type];
+    const randomIndex = Math.floor(Math.random() * library.length);
+    return library[randomIndex]; // Returns object {display, latex}
+  }
+
+  function showDifficultyOptions() {
+    const numQuestions = document.getElementById("subcase-select").value;
+    const difficultyContainer = document.getElementById("difficulty-container");
+    const difficultyImages = document.getElementById("difficulty-images");
+    const difficultyKey = document.getElementById("difficulty-key");
+
+    difficultyImages.innerHTML = "";
+    selectedSubcaseKey = "";
+
+    if (!numQuestions) {
+      difficultyContainer.classList.add("hidden");
+      difficultyKey.classList.add("hidden");
+      return;
+    }
+
+    const imageMap = {
+      "10": ["1A", "1B", "1C", "1D", "1E", "1F"],
+      "15": ["2A", "2B", "2C"],
+      "20": ["3"]
+    };
+
+    imageMap[numQuestions].forEach((suffix) => {
+      const img = document.createElement("img");
+      img.src = `images/${suffix}.png`;
+      img.alt = suffix;
+      img.width = 100;
+      img.className = "difficulty-option";
+      img.onerror = function() { this.style.display = 'none'; }; // Hide if image missing
+      
+      // Fallback text if image fails
+      if(img.style.display === 'none') {
+          const btn = document.createElement("button");
+          btn.innerText = suffix;
+          btn.className = "difficulty-option";
+          difficultyImages.appendChild(btn);
+      }
+
+      img.onclick = function () {
+        document.querySelectorAll(".difficulty-option").forEach(i => i.classList.remove("selected"));
+        img.classList.add("selected");
+
+        if (numQuestions === "20") {
+          selectedSubcaseKey = "subcase3";
+        } else {
+          selectedSubcaseKey = "subcase" + suffix;
+        }
+      };
+
+      difficultyImages.appendChild(img);
+    });
+
+    difficultyContainer.classList.remove("hidden");
+    difficultyKey.classList.remove("hidden");
+  }
+
+  // FIX 3: Helper function to parse user input into LaTeX template
+  function parseUserFunction(inputStr) {
+    if (!inputStr) return { display: "x", latex: "u" };
+    
+    // Normalize input
+    let clean = inputStr.trim();
+    let latex = clean;
+
+    // 1. Identify common math patterns and convert to LaTeX structure with 'u' placeholder
+    // Note: We use 'u' as the placeholder for where the inner function will go.
+
+    // Case: Trig functions e.g. sin(x) -> \sin(u)
+    if (/^(sin|cos|tan|sec|csc|cot|arcsin|arccos|arctan|ln|log)/.test(clean)) {
+        latex = latex.replace(/^(sin|cos|tan|sec|csc|cot|arcsin|arccos|arctan|ln)/, "\\$1");
+        latex = latex.replace(/\(x\)/, "\\left( u \\right)"); 
+        // Handle custom bases like log_2(x)
+        latex = latex.replace(/log_(\d+)\(x\)/, "\\log_{$1}\\left( u \\right)");
+    } 
+    // Case: Power x^n -> (u)^n
+    else if (clean.includes("^")) {
+        // e.g. x^2 -> \left( u \right)^2
+        // e.g. e^x -> e^{ u }
+        if (clean.startsWith("x^")) {
+            let p = clean.substring(2);
+            // Handle fractions in power like (1/2)
+            p = p.replace(/\((\d+)\/(\d+)\)/, "\\frac{$1}{$2}");
+            latex = `\\left( u \\right)^{${p}}`;
+        } else if (clean.startsWith("e^")) {
+            // e^x
+             latex = `e^{ u }`;
+        } else if (/^\d+\^x/.test(clean)) {
+            // 2^x -> 2^{ u }
+            let base = clean.split("^")[0];
+            latex = `${base}^{ u }`;
+        }
+    } 
+    // Case: Roots
+    else if (clean.includes("sqrt")) {
+        latex = "\\sqrt{ u }";
+    }
+    // Case: Rational 1/x -> 1/(u)
+    else if (clean === "1/x") {
+        latex = "\\frac{1}{ u }";
+    }
+    // Case: Linear 2x -> 2(u)
+    else if (/^\d+x$/.test(clean)) {
+        let coeff = clean.replace("x", "");
+        latex = `${coeff} \\cdot u `; // Using dot for clarity
+    }
+
+    return { display: clean, latex: latex };
+  }
+
+  function generateChainRule() {
+    if (!selectedSubcaseKey || !subcases[selectedSubcaseKey]) {
+      alert("Please select number of questions and difficulty level.");
+      return;
+    }
+
+    const patterns = subcases[selectedSubcaseKey];
+    const questionsList = document.getElementById("questions");
+    questionsList.innerHTML = "";
+
+    // Shuffle patterns
+    const shuffledPatterns = [...patterns].sort(() => 0.5 - Math.random());
+
+    // Generate questions
+    shuffledPatterns.forEach(pattern => {
+      let functionChain = [];
+      
+      // Step 1: Resolve the specific functions involved in this question
+      if (isRandomMode) {
+        functionChain = pattern.map(index => {
+          const type = selectedFunctionTypes[index - 1];
+          return getRandomFunction(type);
+        });
+      } else {
+        functionChain = pattern.map(index => {
+          const val = document.getElementById(`f${index}`).value;
+          return parseUserFunction(val);
+        });
+      }
+
+      // Step 2: Build the Composition from Inside Out using LaTeX Templates
+      // Pattern: [Outer, ..., Inner] (e.g., f(g(h(x))) -> Pattern index ordering depends on logic)
+      // The logic in previous code was: pattern array contains indices of functions.
+      // e.g. [1, 2, 4] means f1(f2(f4(x)))? Or f4 is inner?
+      // Convention: Last element in the pattern array is usually the *outermost* or *innermost* depending on interpretation.
+      // Standard chain rule gen: f(g(h(x))). 
+      // Let's assume the array [A, B, C] means A(B(C(x))).
+      
+      // Start with the variable 'x'
+      let finalLatex = "x"; 
+
+      // We need to iterate from Right to Left (Inner to Outer)
+      // Example: Chain is [sin(u), u^2, e^u]. 
+      // 1. Inner: e^x (replace u with x in last func) -> e^x
+      // 2. Mid: (e^x)^2 (replace u with prev result in mid func)
+      // 3. Outer: sin((e^x)^2)
+      
+      for (let i = functionChain.length - 1; i >= 0; i--) {
+        const currentFunc = functionChain[i];
+        let template = currentFunc.latex;
+        
+        // Substitution: Replace 'u' in the template with the accumulated result
+        // Note: The templates are designed to handle 'u' substitution cleanly.
+        finalLatex = template.replace(/u/g, finalLatex);
+      }
+
+      // Step 3: Create list item
+      const displayFuncs = functionChain.map(f => f.display).join(" \\circ ");
+      
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <div style="font-size: 1.2rem; margin-bottom: 8px;">
+           Differentiate: \\[ y = ${finalLatex} \\]
+        </div>
+        <div class="functions-used">Functions involved: ${displayFuncs}</div>
+      `;
+      questionsList.appendChild(li);
+    });
+  
+    // Trigger MathJax typeset
+    if (typeof MathJax !== 'undefined') {
+      MathJax.typesetPromise().then(() => {
+        // Promise resolved
+      }).catch((err) => console.log(err.message));
+    }
+  }
+</script>
+</body>
+</html>
